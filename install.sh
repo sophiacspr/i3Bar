@@ -63,13 +63,19 @@ echo "[5/6] Injecting i3 bar config..."
 if ! grep -q "i3blocks-unified START" "$I3_CONFIG"; then
 cat >> "$I3_CONFIG" <<EOF
 
-$MARKER_START
-bar {
-    status_command i3blocks -c $TARGET_DIR/i3blocks.conf
-}
-$MARKER_END
-EOF
+SNIPPET_FILE="$REPO_DIR/config/i3bar_snippet.conf"
+
+echo "[5/6] Injecting i3 bar config..."
+
+if ! grep -q "i3blocks-unified START" "$I3_CONFIG"; then
+    {
+        echo ""
+        echo "$MARKER_START"
+        cat "$SNIPPET_FILE"
+        echo "$MARKER_END"
+    } >> "$I3_CONFIG"
 fi
+
 
 echo "[6/6] Reloading i3..."
 

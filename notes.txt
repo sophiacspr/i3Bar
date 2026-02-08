@@ -1,0 +1,1 @@
+Optional: Install Cascadia Code Nerd Font for best appearance.
