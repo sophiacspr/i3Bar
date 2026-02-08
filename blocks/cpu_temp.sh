@@ -4,7 +4,7 @@ exec 2>/dev/null
 
 # dependency check
 if ! command -v sensors >/dev/null; then
-    echo "Temp: N/A"
+    echo "N/A"
     exit 0
 fi
 
@@ -18,7 +18,7 @@ temp=$(
 )
 
 if [ -z "$temp" ]; then
-    echo "Temp: N/A"
+    echo "N/A"
 else
-    echo "Temp: $temp"
+    echo "$temp"
 fi
