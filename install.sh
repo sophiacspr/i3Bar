@@ -60,7 +60,7 @@ EOF
 
 echo "[5/6] Injecting i3 bar config..."
 
-SNIPPET_FILE="$REPO_DIR/config/i3bar_snippet.conf"
+SNIPPET_FILE="$REPO_DIR/i3bar_snippet.conf"
 
 echo "[5/6] Injecting i3 bar config..."
 
