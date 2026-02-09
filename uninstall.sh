@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
 
 TARGET_DIR="$HOME/.config/i3blocks-unified"
 I3_CONFIG="$HOME/.config/i3/config"
