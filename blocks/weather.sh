@@ -100,22 +100,8 @@ case "${BLOCK_BUTTON:-}" in
   	# if the xdg-utils exists (to use the standard browser)
     if command -v xdg-open >/dev/null; then
 
-	      # open page based on coordinates
 	      url="https://www.meteoblue.com/en/weather/week/${lat},${lon}"
-
-# 	      # if the 
-# 	      if [ -n "$GEONAMES_USER" ]; then
-# 	        geo_names_id=$(
-# 	          curl -fsS --max-time 2 \
-# 	            "https://api.geonames.org/searchJSON?q=${city_enc}&maxRows=1&username=${GEONAMES_USER}" \
-# 	          | jq -r '.geonames[0].geonameId // empty'
-# 	        )
-# 
-# 	        if [ -n "$geo_names_id" ]; then
-# 	          url="https://www.meteoblue.com/en/weather/week/${city_enc}_${country_enc}_${geo_names_id}"
-# 	        fi
-# 	      fi
-
+	      # open page based on coordinates
 	      xdg-open "$url" >/dev/null 2>&1 &
     fi
     ;;
