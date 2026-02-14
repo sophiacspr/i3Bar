@@ -1,7 +1,6 @@
 #!/bin/bash
 
 
-
 # First snapshot
 read -r cpu user nice system idle iowait irq softirq steal _ < /proc/stat
 total=$((user + nice + system + idle + iowait + irq + softirq + steal))

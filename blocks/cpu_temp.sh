@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 # dependency check
 if ! command -v sensors >/dev/null; then
     echo "N/A"

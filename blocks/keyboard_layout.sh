@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 # dependency check
 if ! command -v setxkbmap >/dev/null; then
     echo "KB: N/A"
@@ -11,6 +9,7 @@ fi
 # get the current layout
 current_layout=$(setxkbmap -query | awk '/layout/{print $2}')
 
+# if no layout is found, exit with N/A
 if [ -z "$current_layout" ]; then
     echo "KB: ?"
     exit 0
