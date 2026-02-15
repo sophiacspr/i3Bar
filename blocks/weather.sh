@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# weather display in bar with open-meteo 
+# weather browser display with bluemeteo
+
 # dependency check: curl and jq
 for cmd in curl jq; do
     if ! command -v "$cmd" >/dev/null; then
@@ -8,19 +11,35 @@ for cmd in curl jq; do
     fi
 done
 
-# weather display in bar with open-meteo 
-# weather browser display with bluemeteo
-
 ########## QUERY LOCATION ##########
+cache="$HOME/.config/i3blocks-unified/location.cache"
+mkdir -p "$cache"
 
-# get the location, city, country, coordinates from ip
-geo=$(curl -fsS --max-time 2 https://ipapi.co/json/ || true) # returns a dict with the required fields or true if the curl command failed
+# if cache is there, but too old, update it, otherwise use it
+if [ -f "$cache" ] && [ "$(find "$cache" -mmin -60 2>/dev/null)" ]; then
+    # find lat and lon from cache
+    source "$cache"
+else
+    # update the location cache with new coordinates
+    geo="$(curl -fsS --max-time 5 https://ipapi.co/json/ || echo '')"
 
-# extract values from the json
-lat=$(jq -r '.latitude // empty' <<<"$geo") # put empty if not provided
-lon=$(jq -r '.longitude // empty' <<<"$geo")
-city=$(jq -r '.city // empty' <<<"$geo")
-country=$(jq -r '.country_name // empty' <<<"$geo")
+    new_lat="$(echo "$geo" | jq -r '.latitude // empty')" # extract values or 'empty' from json
+    new_lon="$(echo "$geo" | jq -r '.longitude // empty')"
+    new_city="$(echo "$geo" | jq -r '.city // empty')"
+    new_country="$(echo "$geo" | jq -r '.country_name // empty')"
+
+    # update the cache if we got new coordinates
+    if [ -n "$new_lat" ] && [ -n "$new_lon" ]; then
+        printf 'lat=%s\nlon=%s\ncity=%s\ncountry=%s\n' "$new_lat" "$new_lon" "$new_city" "$new_country" >"$cache"
+        lat="$new_lat"
+        lon="$new_lon"
+        city="$new_city"
+        country="$new_country"
+    # if we got no coordinates, but there is a cache, fallback to still using the cache values
+    elif [ -f "$cache" ]; then
+        source "$cache"
+    fi
+fi
 
 # no coordinates extracted, no wheather
 if [ -z "$lat" ] || [ -z "$lon" ]; then
@@ -31,7 +50,6 @@ fi
 # make city and country save for usage inside of a URL
 city_enc=$(jq -sRr @uri <<<"$city")  # read entire line at once as plain text and return as plain text
 country_enc=$(jq -sRr @uri <<<"$country")
-
 
 ########## DISPLAY WHEATHER ##########
 
@@ -93,6 +111,8 @@ icon=$(emoji_from_state "$state")
 # output the city, country, weather emoji, temperature (feels: feels_temperature)
 printf "%s, %s: %s %+.0f°C (feels %+.0f°C)\n" "$city" "$country" "$icon" "$t" "$t_feels"
 
+
+########## WHEATHER PAGE ON CLICK ##########
 
 # open a weather page if button is clicked
 case "${BLOCK_BUTTON:-}" in
