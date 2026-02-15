@@ -31,7 +31,7 @@ if [ -z "$essid" ]; then
     echo "Wi-Fi: Disconnected"
 else
 	# replace \ with \\
-    safe_essid=$(sed 's/"/\\"/g' <<< "$safe_essid")
+    safe_essid=$(sed 's/"/\\"/g' <<< "$essid")
     # replace % with %%
     safe_essid=$(sed 's/%/%%/g' <<< "$safe_essid")
     # replace " with \"
