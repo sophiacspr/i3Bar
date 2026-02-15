@@ -39,7 +39,11 @@ device_names="$(
     echo "$device_lines" |
     cut -d ' ' -f 3- # split at space and third field onwards (remove "Device XX:XX:XX:XX:XX:XX")
 )"
-# put names in a readable format (comma separated)
+# remove leading whitespaces from the names 
+device_names="$(echo "$device_names" | sed 's/^[[:space:]]*/')" # ^ matches start
+# remove trailing whitespaces from the names
+device_names="$(echo "$device_names" | sed 's/[[:space:]]*$//')" # $ matches end
+
 connected_devices="$(
     echo "$device_names" |
     awk '
