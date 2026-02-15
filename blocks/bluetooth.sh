@@ -1,8 +1,6 @@
 #!/bin/bash
 
-
-
-# check if bluetoothctl is available
+# check dependency for bluetoothctl
 if ! command -v bluetoothctl >/dev/null; then
     echo "Bluetooth: N/A"
     exit 0
@@ -33,10 +31,25 @@ if [ -z "$power_status" ] || [ "$power_status" != "yes" ]; then
     exit 0
 fi
 
-#  get connected devices (single line)
-connected_devices=$(bluetoothctl devices Connected \
-  | cut -d ' ' -f 3- | paste -sd ", ")
+#  get connected devices
+# extract lines with connected devices
+device_lines="$(bluetoothctl devices Connected 2>/dev/null)"
+# extract device names
+device_names="$(
+    echo "$device_lines" |
+    cut -d ' ' -f 3- # split at space and third field onwards (remove "Device XX:XX:XX:XX:XX:XX")
+)"
+# put names in a readable format (comma separated)
+connected_devices="$(
+    echo "$device_names" |
+    awk '
+        NR == 1 { out = $0; next }
+        { out = out ", " $0 }
+        END { print out }
+    '
+)"  # first line: initialize out with device name, then append ", " and next device name for other lines, finally print the result
 
+# print status
 if [ -z "$connected_devices" ]; then
     echo "Bluetooth: On"
 else
