@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-
 TARGET_DIR="$HOME/.config/i3blocks-unified"
 I3_CONFIG="$HOME/.config/i3/config"
+BACKUP_DIR="$HOME/.config/i3blocks-unified-backups"
 
 MARKER_START="# >>> i3blocks-unified START >>>"
 MARKER_END="# <<< i3blocks-unified END <<<"
@@ -18,13 +18,19 @@ if [ ! -f "$I3_CONFIG" ]; then
   exit 1
 fi
 
-echo "[2/4] Removing injected i3 bar block..."
+echo "[2/4] Restoring i3 config..."
 
-if grep -q "i3blocks-unified START" "$I3_CONFIG"; then
-  sed -i "/$MARKER_START/,/$MARKER_END/d" "$I3_CONFIG"
-  echo "Injected bar block removed."
+# restore original i3 config if backup exists
+if [ -d "$BACKUP_DIR" ]; then
+  LATEST_BACKUP=$(ls -td "$BACKUP_DIR"/i3-config.bak 2>/dev/null | head -n1)
+  if [ -f "$LATEST_BACKUP" ]; then
+    cp "$LATEST_BACKUP" "$I3_CONFIG"
+    echo "Restored original i3 config from backup: $LATEST_BACKUP"
+  else
+    echo "No backup of i3 config found in $BACKUP_DIR. Original config not restored."
+  fi
 else
-  echo "No injected bar block found. Skipping."
+  echo "No backup directory found at $BACKUP_DIR. Original config not restored."
 fi
 
 echo "[3/4] Removing installed files..."
