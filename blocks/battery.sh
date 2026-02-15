@@ -21,30 +21,36 @@ if [ ! -d "$BAT" ]; then
 fi
 
 # optional power profile support
-# find out current profile
-if command -v powerprofilesctl >/dev/null; then
-    profile=$(powerprofilesctl get 2>/dev/null || echo "unknown")
+# find current profile
+if command -v powerprofilesctl >/dev/null 2>&1; then
+    profile="$(powerprofilesctl get 2>/dev/null || echo unknown)"
 else
     profile="default"
 fi
 
-# cycle profiles on click
-profile_info = $(powerprofilesctl list 2</dev/null || echo "")
-profile_header_lines="$(
-    echo "$profile_info" |
-    grep -E '^[[:space:]]*[*]?[[:space:]]*[a-z0-9-]+:' # find whitespaces, optional * ([*]?), more whitespaces, then profile name followed by :, ^ matches from the start
-)"
-profile_names="$(
-    echo "$profile_header_lines" |
-    sed -E 's/^[[:space:]]*\*?[[:space:]]*//' # remove leading whitespace (^[[:space:]])and optional * (*\*?) and more whitespace ([[:space:]]*)
-)"
-profiles="$(
-    echo "$profile_names" |
-    sed -E 's/:$//' # remove trailing :
-)"
+if command -v powerprofilesctl >/dev/null 2>&1; then
+
+    profile_info="$(powerprofilesctl list 2>/dev/null || echo "")"
+
+    profile_header_lines="$(
+        echo "$profile_info" |
+        grep -E '^[[:space:]]*[*]?[[:space:]]*[a-z0-9-]+:'
+    )" # match lines with profile names
+
+    profile_names="$(
+        echo "$profile_header_lines" |
+        sed -E 's/^[[:space:]]*\*?[[:space:]]*//'
+    )" # remove leading whitespace, optional *, and more 
+
+    # convert newline list into a bash array
+    mapfile -t profiles < <(
+        echo "$profile_names" |
+        sed -E 's/:$//'
+    )
+fi
 
 # extract profile names from the output
-if [ "$BLOCK_BUTTON" = "1" ] && command -v powerprofilesctl >/dev/null; then
+if [ "$BLOCK_BUTTON" = "1" ] && && [ "${#profiles[@]}" -gt 0 ]; then
     next=""
 
     # find the next profile in the list
