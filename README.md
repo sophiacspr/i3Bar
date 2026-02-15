@@ -78,3 +78,5 @@ network-manager-gnome
 i3blocks
 i3-wm
 ```
+
+Additionally, the bar will look the best, if the user has a font installed that supports the used icons. The default font used in the configuration is `Cascadia Code NF`, but it can be easily changed to any other desired font by changing the `font` variable in the i3blocks configuration file `~/.config/i3/i3blocks-unified.conf`. There, e.g. also accent colors or the bar position can be changed to the user's liking.
