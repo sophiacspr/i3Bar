@@ -50,7 +50,7 @@ if command -v powerprofilesctl >/dev/null 2>&1; then
 fi
 
 # extract profile names from the output
-if [ "$BLOCK_BUTTON" = "1" ] && && [ "${#profiles[@]}" -gt 0 ]; then
+if [ "$BLOCK_BUTTON" = "1" ] && [ "${#profiles[@]}" -gt 0 ]; then
     next=""
 
     # find the next profile in the list
